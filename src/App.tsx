@@ -12,7 +12,6 @@ interface FileItem {
 }
 function App() {
     const [list, setList] = useState<FileItem[]>([]);
-    const [target, setTarget] = useState("");
 
     async function convert(input: string, output: string) {
         // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -26,6 +25,15 @@ function App() {
     }
 
     async function convertList() {
+        const target = await open({
+            multiple: false,
+            directory: true,
+        });
+
+        if (!target) {
+            return;
+        }
+
         if (target === "") {
             return;
         }
@@ -65,24 +73,12 @@ function App() {
         }
     }
 
-    async function selectTarget() {
-        const path = await open({
-            multiple: false,
-            directory: true,
-        });
-        console.log(path)
-
-        if (path) {
-            setTarget(path)
-        }
-    }
 
     return (
         <Box  component="section" sx={{p: 2, border: '1px dashed grey', alignItems: 'center'}}>
 
             <ButtonGroup>
                 <Button variant="solid" onClick={() => selectItem()}>select NCM</Button>
-                <Button variant="solid" onClick={() => selectTarget()}>select target</Button>
                 <Button variant="solid" onClick={() => convertList()}>convert</Button>
             </ButtonGroup>
             <List>
